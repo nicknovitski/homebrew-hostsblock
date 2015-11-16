@@ -46,12 +46,6 @@ class Hostsblock < Formula
     EOS
   end
 
-  test do
-    # I couldn't get more realistic tests to finish within the timeout :(
-    system bin/"hostsblock", "-h"
-    system bin/"hostsblock-urlcheck", "-h"
-  end
-
   plist_options :startup => true
 
   def plist; <<-EOS.undent
