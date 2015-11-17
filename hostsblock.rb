@@ -20,7 +20,7 @@ class Hostsblock < Formula
     end
     lib.install "src/hostsblock-common.sh"
 
-    commands = %w[hostsblock hostsblock-urlcheck]
+    commands = %w[hostsblock] # do not install urlcheck yet
     inreplace commands.map { |c| "src/#{c}.sh" }, "/usr/local/lib", lib
     commands.each { |command| bin.install "src/#{command}.sh" => command }
 

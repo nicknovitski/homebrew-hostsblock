@@ -10,8 +10,3 @@ script:
   - brew install --HEAD hostsblock
   - sudo hostsblock -f test/hostsblock.conf
   - grep localtest test/hosts
-  - "! grep -L foo.com test/hosts"
-  - echo 1 | sudo hostsblock-urlcheck -f test/hostsblock.conf http://foo.com
-  - grep foo.com test/hosts
-  - echo 1 | sudo hostsblock-urlcheck -f test/hostsblock.conf http://foo.com
-  - "! grep -L foo.com test/hosts"
