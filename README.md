@@ -4,46 +4,31 @@ a homebrew formula for installing [hostsblock](gaenserich.github.io/hostsblock),
 ## Install
 
 1. get [homebrew](https://brew.sh)
-2. `brew install --HEAD nicknovitski/hostsblock/hostsblock`
+2. `brew install --HEAD --with-p7zip nicknovitski/hostsblock/hostsblock`
 
 ## Usage
 
-### `hostsblock`
+**First**: `ls $(brew --prefix)/etc/hostsblock`, and examine each file in full.
 
-`sudo hostsblock` will update your `/etc/hosts` file against a bunch of different online sources.  You might want to make a back-up of that file first, and/or look at `$(brew --prefix)/etc/hostsblock/hostsblock.conf` to see what the default sources are.
+`hostsblock.conf` is the primary configuration file.  It's annotated to explain all possible options, and even the formats of the other files.  Notably it contains the list of online sources which will be downloaded and combined into your black list.
 
-When you install the formula, homebrew will give you instructions on how to install a launchctl service to automatically run hostsblock daily, but ignore them, this way is much better:
+`hosts.head` will be added to the _front_ of any host file you generate.  If your installation worked right, this should currently be identical to your original `/etc/hosts` file, and you won't have to do anything with it.
+
+`black.list` is a list of hosts, one per line, which you wish to explicitly block.  Here's where you can put sites which aren't necessarily serving ads or malware, but which you sometimes wish you couldn't easily reach.  It should be empty right now.
+
+`white.list` is a list of hosts which you wish to explicitly _un_-block, even if they appear on any of the downloaded blacklists.  Right now it should contain a few hosts which must be whitelisted to keep some common web applications from breaking (dropbox, for example). It has a slightly tricky syntax.  Quoting `hostsblock.conf` (which, recall, you should already have read):
+
+> In this file, put a space in front of
+> a string in order to let through that specific site (without quotations), e.g.
+> ` www.example.com` will unblock `http://www.example.com` but not
+> `http://subdomain.example.com`. Leave no space in front of the entry to
+> unblock all subdomains that contain that string, e.g. `.dropbox.com` will let
+> through `www.dropbox.com`, `dl.www.dropbox.com`, `foo.dropbox.com`,
+> `bar.dropbox.com`, etc.
+
+Now that you understand what is going on, invoking `sudo hostsblock` will combine all that stuff into your new `/etc/hosts` file.  Run it every now and then to stay up to date, or install a service which will do that for you:
 
 ```
 $ brew tap gapple/services
 $ brew services start hostsblock
 ```
-#### configuration
-
-All configuration files live in `$(brew --prefix)/etc/hostsblock`.
-
-- `hostsblock.conf`: the primary config file, documented with defaults and options.
-- `hosts.head`: a file whose contents will be added to the _front_ of the resulting hosts file.  Starts as a copy of your original hosts file.
-- `black.list`: a list of additional hosts you wish to block.  Starts as an empty file. 
-- `white.list`: a list of hosts you wish to keep un-blocked, overriding online sources.  Starts as a list of common  
-
-### `hostsblock-urlcheck`
-
-This command lets you easily black- and white-list sites.
-#### Scenario 1: whitelisting
-
-You've updated your hosts file, you're blocking hundreds of thousands of ad servers, your web experience has improved immeasurably...but you've noticed a site, or just one page on it, which breaks as a result.  You decide that the content of that site is worth the sacrifice of being tracked or advertised to.  Enter `hostsblock-urlcheck`
-
-```
-sudo hostsblock-urlcheck www.daisuki.net
-Password:
-Checking to see if url is blocked or unblocked...
-
-'daisuki.net' NOT BLOCKED/REDIRECTED
-	1) Block daisuki.net
-	2) Block daisuki.net and delete all whitelist url entries containing daisuki.net
-	3) Keep unblocked (default)
-1-3 (default: 3):
-```
-
-Of course that host isn't blocked, and no you don't want to block it 
